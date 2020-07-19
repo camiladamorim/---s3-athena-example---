@@ -129,4 +129,4 @@ def lambda_handler(event, context):
 
 
 ### link: 
-[I'm an inline-style link](https://ninaohio.s3.us-east-2.amazonaws.com/certo/2020/07/19/df5623d5-4238-471e-9d19-02ae3cf6ddeb.csv)
+<https://ninaohio.s3.us-east-2.amazonaws.com/certo/2020/07/19/df5623d5-4238-471e-9d19-02ae3cf6ddeb.csv>
