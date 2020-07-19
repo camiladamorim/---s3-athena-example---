@@ -38,10 +38,12 @@ educational data from countries
 29. health - current health status (numeric: from 1 - very bad to 5 - very good)
 30. absences - number of school absences (numeric: from 0 to 93)
 31. G3 - final grade
+>
 
+## Stack para cloudformation
 
-STack para cloudformation
 ```
+---
 AWSTemplateFormatVersion: '2010-09-09'
 
 
@@ -62,12 +64,12 @@ Resources:
     Properties:
       Name: crawlername
       Role: service-role/AWSGlueServiceRole-DefaultRole
-      Description: A crawler to run as the first step in the workflow
+      Description: o crawler vai pegar do bucket para uma tabela do glue todo dia as 22h
       DatabaseName: db-glue
       TablePrefix: dbgluenina
       Schedule:
         Schedule:
-        ScheduleExpression: "cron(0 0 6 * * ?)"
+        ScheduleExpression: "cron(0 0 22 ? * * *)"
       Targets:
         S3Targets:
           - Path: !Ref "s3://ninaohio/"
@@ -106,11 +108,14 @@ Resources:
       Description: "seleciona o genero,idade e saúde dos alunos que tem a nota mais alta"
       Name: "query"
       QueryString: >
-                    SELECT sex,age,nursery FROM ninacovidpublic WHERE g3>4 ```
+                    SELECT sex,age,nursery FROM  dbglueninaninaohio WHERE g3>4
+````
+
 
 
 
 ### função lambda: modifica arquivos já transformados pela query do athena em legíveis
+
 ```
 import boto3
 
