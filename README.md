@@ -132,4 +132,8 @@ def lambda_handler(event, context):
 ### link:
 <https://ninaohio.s3.us-east-2.amazonaws.com/certo/2020/07/19/df5623d5-4238-471e-9d19-02ae3cf6ddeb.csv>
 
+
+
 <img src="./schema_AWS.png">
+
+<img src="./athena.png">
