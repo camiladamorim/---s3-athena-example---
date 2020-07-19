@@ -106,7 +106,7 @@ Resources:
     Properties:
       Database: "db-glue"
       Description: "seleciona o genero,idade e saúde dos alunos que tem a nota mais alta"
-      Name: "query"
+      Name: "certo"
       QueryString: >
                     SELECT sex,age,nursery FROM  dbglueninaninaohio WHERE g3>4
 ````
@@ -121,17 +121,17 @@ import boto3
 
 def lambda_handler(event, context):
     s3 = boto3.client('s3')
-    response = s3.get_object(Bucket='ninaohio', Key='transformed/run-1595103236313-part-r-00000')
+    response = s3.get_object(Bucket='ninaohio', Key='athena/certo/2020/07/19/603beafc-c40c-4359-bf4b-138a63b8d076.csv')
     content = response['Body'].read().decode('utf-8')
     content=str(content)
-    s3.put_object(Body=content, Bucket='ninaohio', Key='output/file.txt')
+    print(content)
+    s3.put_object(Body=content, Bucket='ninaohio', Key='output/result.txt')
     return(0)
 ```
 
 
 ### link:
-<https://ninaohio.s3.us-east-2.amazonaws.com/certo/2020/07/19/df5623d5-4238-471e-9d19-02ae3cf6ddeb.csv>
-
+<https://ninaohio.s3.us-east-2.amazonaws.com/athena/certo/2020/07/19/603beafc-c40c-4359-bf4b-138a63b8d076.csv>
 
 
 <img src="./schema_AWS.png">

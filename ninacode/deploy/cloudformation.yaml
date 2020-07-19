@@ -53,7 +53,7 @@ Resources:
         PublishCloudWatchMetricsEnabled: true
         RequesterPaysEnabled: false
         ResultConfigurationUpdates:
-          OutputLocation: "s3://ninaohio/transformed"
+          OutputLocation: "s3://ninaohio/athena/"
 
 
   AthenaNamedQuery:
