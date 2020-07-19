@@ -125,13 +125,13 @@ def lambda_handler(event, context):
     content = response['Body'].read().decode('utf-8')
     content=str(content)
     print(content)
-    s3.put_object(Body=content, Bucket='ninaohio', Key='output/result.txt')
+    s3.put_object(Body=content, Bucket='ninaohio', Key='output/file.txt')
     return(0)
 ```
 
 
 ### link:
-<https://ninaohio.s3.us-east-2.amazonaws.com/athena/certo/2020/07/19/603beafc-c40c-4359-bf4b-138a63b8d076.csv>
+<https://ninaohio.s3.us-east-2.amazonaws.com/output/file.txt>
 
 
 <img src="./schema_AWS.png">
