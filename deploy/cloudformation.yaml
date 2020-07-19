@@ -1,0 +1,65 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+
+Resources:
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+        AccessControl: PublicReadWrite
+        BucketName: ninaohio
+
+
+  Crawler:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Name: crawlername
+      Role: service-role/AWSGlueServiceRole-DefaultRole
+      Description: A crawler to run as the first step in the workflow
+      DatabaseName: db-glue
+      TablePrefix: dbgluenina
+      Schedule:
+        Schedule:
+        ScheduleExpression: "cron(0 0 6 * * ?)"
+      Targets:
+        S3Targets:
+          - Path: !Ref "s3://ninaohio/"
+
+  Job:
+    Type: AWS::Glue::Job
+    Properties:
+      Description: Glue job to run after the crawler
+      Name: ninajob
+      Role: AWSGlueServiceRole-DefaultRole
+      Command:
+        Name: pythonshell
+        PythonVersion: 3
+        SparkVersion: 2.4
+        ETLLanguage: "python"
+        ScriptLocation: !Sub "s3://aws-glue-scripts-598860770757-us-east-2/camila/ninajob"
+
+  StartTrigger:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Name: trigger
+      Type: ON_DEMAND
+      Description: Trigger for starting the workflow
+      TablePrefix: dbglue
+      Target: ninajob
+
+
+Resources:
+  Function:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Role: arn:aws:iam::123456789012:role/lambda-role
+      Code:
+        S3Bucket: ninaohio
+        S3Key: lambda.py
+      Runtime: Python 3.8
+      Timeout: 5
