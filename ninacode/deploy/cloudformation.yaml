@@ -29,31 +29,7 @@ Resources:
         S3Targets:
           - Path: !Ref "s3://ninaohio/"
 
-  Job:
-    Type: AWS::Glue::Job
-    Properties:
-      Description: Glue job to run after the crawler
-      Name: ninajob
-      Role: AWSGlueServiceRole-DefaultRole
-      Command:
-        Name: pythonshell
-        PythonVersion: 3
-        SparkVersion: 2.4
-        ETLLanguage: "python"
-        ScriptLocation: !Sub "s3://aws-glue-scripts-598860770757-us-east-2/camila/ninajob"
-
-  StartTrigger:
-    Type: AWS::Glue::Trigger
-    Properties:
-      Name: trigger
-      Type: ON_DEMAND
-      Description: Trigger for starting the workflow
-      TablePrefix: dbglue
-      Target: ninajob
-
-
-Resources:
-  Function:
+  Lambda:
     Type: AWS::Lambda::Function
     Properties:
       Handler: index.handler
@@ -63,3 +39,28 @@ Resources:
         S3Key: lambda.py
       Runtime: Python 3.8
       Timeout: 5
+
+
+  Athena:
+    Type: AWS::Athena::WorkGroup
+    Properties:
+      Name: workgroup
+      Description: My WorkGroup
+      State: ENABLED
+      WorkGroupConfigurationUpdates:
+        BytesScannedCutoffPerQuery: 10000000
+        EnforceWorkGroupConfiguration: true
+        PublishCloudWatchMetricsEnabled: true
+        RequesterPaysEnabled: false
+        ResultConfigurationUpdates:
+          OutputLocation: "s3://ninaohio/transformed"
+
+
+  AthenaNamedQuery:
+    Type: AWS::Athena::NamedQuery
+    Properties:
+      Database: "db-glue"
+      Description: "seleciona o genero,idade e saúde dos alunos que tem a nota mais alta"
+      Name: "query"
+      QueryString: >
+                    SELECT sex,age,nursery FROM ninacovidpublic WHERE g3>4

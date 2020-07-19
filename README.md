@@ -43,6 +43,71 @@ educational data from countries
 31 G2 - second period grade (numeric: from 0 to 20)
 32 G3 - final grade (numeric: from 0 to 20, output target)
 
-Additional note: there are several (382) students that belong to both datasets
-These students can be identified by searching for identical attributes
-that characterize each student, as shown in the annexed R file.
+
+
+``` 
+AWSTemplateFormatVersion: '2010-09-09'
+
+
+Resources:
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+        AccessControl: PublicReadWrite
+        BucketName: ninaohio
+
+
+  Crawler:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Name: crawlername
+      Role: service-role/AWSGlueServiceRole-DefaultRole
+      Description: A crawler to run as the first step in the workflow
+      DatabaseName: db-glue
+      TablePrefix: dbgluenina
+      Schedule:
+        Schedule:
+        ScheduleExpression: "cron(0 0 6 * * ?)"
+      Targets:
+        S3Targets:
+          - Path: !Ref "s3://ninaohio/"
+
+  Lambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Role: arn:aws:iam::123456789012:role/lambda-role
+      Code:
+        S3Bucket: ninaohio
+        S3Key: lambda.py
+      Runtime: Python 3.8
+      Timeout: 5
+
+
+  Athena:
+    Type: AWS::Athena::WorkGroup
+    Properties:
+      Name: workgroup
+      Description: My WorkGroup
+      State: ENABLED
+      WorkGroupConfigurationUpdates:
+        BytesScannedCutoffPerQuery: 10000000
+        EnforceWorkGroupConfiguration: true
+        PublishCloudWatchMetricsEnabled: true
+        RequesterPaysEnabled: false
+        ResultConfigurationUpdates:
+          OutputLocation: "s3://ninaohio/transformed"
+
+
+  AthenaNamedQuery:
+    Type: AWS::Athena::NamedQuery
+    Properties:
+      Database: "db-glue"
+      Description: "seleciona o genero,idade e saúde dos alunos que tem a nota mais alta"
+      Name: "query"
+      QueryString: >
+                    SELECT sex,age,nursery FROM ninacovidpublic WHERE g3>4 ```
